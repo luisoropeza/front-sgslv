@@ -28,9 +28,6 @@
             </v-card-item>
           </v-col>
         </v-row>
-        <v-card-item class="wrap-btn-update">
-          <Dialog @fetchData="fetchData" :user="user" />
-        </v-card-item>
         <v-divider class="my-2"></v-divider>
         <v-card-item class="text-h5 font-weight-medium mb-5">
           Information User
@@ -67,22 +64,36 @@
             </v-card-item>
           </v-col>
         </v-row>
+        <v-divider
+          class="my-2"
+          v-if="user.role && user.role === 'EMPLOYEE'"
+        ></v-divider>
+        <v-card-item
+          class="text-h5 font-weight-medium"
+          v-if="user.role && user.role === 'EMPLOYEE'"
+        >
+          Requests
+          <Table :height="275" :requests="requests" />
+        </v-card-item>
       </v-card-item>
     </v-card>
   </div>
 </template>
 
 <script setup>
-import Dialog from "@/components/admin/DialogUpdateUser.vue";
+import Table from "@/components/personal/TableRequestsByUser.vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/user";
+import { useRequestStore } from "@/store/request";
 import { ref, onMounted } from "vue";
 import { format } from "@formkit/tempo";
 
 const router = useRouter();
 const userStore = useUserStore();
+const requestStore = useRequestStore();
 const id = ref(router.currentRoute.value.params.id);
 const user = ref({});
+const requests = ref([]);
 
 onMounted(async () => {
   fetchData();
@@ -90,6 +101,8 @@ onMounted(async () => {
 const fetchData = async () => {
   await userStore.getUserById(id.value);
   user.value = userStore.user;
+  await requestStore.getRequestsByEmployee(id.value);
+  requests.value = requestStore.requests;
 };
 </script>
 

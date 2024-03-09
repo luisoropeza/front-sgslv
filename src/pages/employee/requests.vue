@@ -5,18 +5,18 @@
         <div class="text-h4 font-weight-bold">Your Requests</div>
       </v-card-item>
       <v-card-item class="wrap-btn-create">
-        <DialogCR @fetchData="fetchData" />
+        <Dialog @fetchData="fetchData" />
       </v-card-item>
       <v-card-item>
-        <TableR :requests="requests" :height="700" />
+        <Table :requests="requests" :height="700" />
       </v-card-item>
     </v-card>
   </div>
 </template>
 
 <script setup>
-import DialogCR from "@/components/user/DialogCR.vue";
-import TableR from "@/components/user/TableR.vue";
+import Dialog from "@/components/employee/DialogCreateRequest.vue";
+import Table from "@/components/employee/TableRequests.vue";
 import { useUserStore } from "@/store/user";
 import { useRequestStore } from "@/store/request";
 import { ref, onMounted } from "vue";
@@ -30,11 +30,9 @@ onMounted(async () => {
   fetchData();
 });
 const fetchData = async () => {
-  await requestStore.getAllRequests();
+  await requestStore.getRequests();
   user.value = userStore.user;
-  requests.value = requestStore.requests.filter(
-    (request) => request.user.id === user.value.id
-  );
+  requests.value = requestStore.requests
 };
 </script>
 

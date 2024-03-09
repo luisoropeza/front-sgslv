@@ -3,6 +3,7 @@
     <thead>
       <tr>
         <th class="text-left"><strong>User</strong></th>
+        <th class="text-left"><strong>Team</strong></th>
         <th class="text-left"><strong>Reason</strong></th>
         <th class="text-left"><strong>Status</strong></th>
         <th class="text-left"><strong>Created At</strong></th>
@@ -14,7 +15,12 @@
         <td colspan="6" class="no-requests">There's no request yet.</td>
       </tr>
       <tr v-else v-for="request in requests" :key="request.id">
-        <td class="font-weight-medium">You</td>
+        <td class="font-weight-medium">
+          {{ request.user.firstName }} {{ request.user.lastName }}
+        </td>
+        <td class="font-weight-medium">
+          {{ request.user?.team?.name ? request.user.team.name : "N/A" }}
+        </td>
         <td class="font-weight-medium">{{ request.reason }}</td>
         <td class="font-weight-medium">
           <span
@@ -37,8 +43,8 @@
             color="blue-accent-3"
             size="x-small"
             :to="{
-              name: 'user-request',
-              params: { id: request.id },
+              name: 'personal-employee-request',
+              params: { employeeId: request.user.id, requestId: request.id },
             }"
           >
             <v-icon icon="mdi-eye" size="20" />

@@ -32,12 +32,12 @@ const routes = [
       {
         path: "home",
         name: "admin-home",
-        component: () => import("@/pages/both/dashboard.vue"),
+        component: () => import("@/pages/dashboard.vue"),
       },
       {
         path: "profile",
         name: "admin-profile",
-        component: () => import("@/pages/both/profile.vue"),
+        component: () => import("@/pages/admin/profile.vue"),
       },
       {
         path: "teams",
@@ -60,45 +60,81 @@ const routes = [
         component: () => import("@/pages/admin/user.vue"),
       },
       {
-        path: "requests",
-        name: "admin-requests",
-        component: () => import("@/pages/admin/requests.vue"),
-      },
-      {
-        path: "user/:userId/request/:requestId",
-        name: "admin-user-request",
+        path: "employee/:employeeId/request/:requestId",
+        name: "admin-employee-request",
         component: () => import("@/pages/admin/request.vue"),
       },
     ],
   },
   {
-    path: "/user",
-    name: "user",
-    component: () => import("@/layouts/user.vue"),
-    redirect: "/user/home",
+    path: "/employee",
+    name: "employee",
+    component: () => import("@/layouts/employee.vue"),
+    redirect: "/employee/home",
     meta: {
       title: "Dashboard",
     },
     children: [
       {
         path: "home",
-        name: "user-home",
-        component: () => import("@/pages/both/dashboard.vue"),
+        name: "employee-home",
+        component: () => import("@/pages/dashboard.vue"),
       },
       {
         path: "profile",
-        name: "user-profile",
-        component: () => import("@/pages/both/profile.vue"),
+        name: "employee-profile",
+        component: () => import("@/pages/employee/profile.vue"),
       },
       {
         path: "requests",
-        name: "user-requests",
-        component: () => import("@/pages/user/requests.vue"),
+        name: "employee-requests",
+        component: () => import("@/pages/employee/requests.vue"),
       },
       {
         path: "request/:id",
-        name: "user-request",
-        component: () => import("@/pages/user/request.vue"),
+        name: "employee-request",
+        component: () => import("@/pages/employee/request.vue"),
+      },
+    ],
+  },
+  {
+    path: "/personal",
+    name: "personal",
+    component: () => import("@/layouts/personal.vue"),
+    redirect: "/personal/home",
+    meta: {
+      title: "Dashboard",
+    },
+    children: [
+      {
+        path: "home",
+        name: "personal-home",
+        component: () => import("@/pages/dashboard.vue"),
+      },
+      {
+        path: "profile",
+        name: "personal-profile",
+        component: () => import("@/pages/personal/profile.vue"),
+      },
+      {
+        path: "users",
+        name: "personal-employees",
+        component: () => import("@/pages/personal/users.vue"),
+      },
+      {
+        path: "user/:id",
+        name: "personal-employee",
+        component: () => import("@/pages/personal/user.vue"),
+      },
+      {
+        path: "requests",
+        name: "personal-requests",
+        component: () => import("@/pages/personal/requests.vue"),
+      },
+      {
+        path: "employee/:employeeId/request/:requestId",
+        name: "personal-employee-request",
+        component: () => import("@/pages/personal/request.vue"),
       },
     ],
   },
@@ -128,17 +164,27 @@ const roleRoutesMap = {
       "admin-team",
       "admin-users",
       "admin-user",
-      "admin-requests",
-      "admin-user-request",
+      "admin-employee-request",
     ],
   },
-  USER: {
+  EMPLOYEE: {
     allowedRoutes: [
-      "user",
-      "user-home",
-      "user-profile",
-      "user-requests",
-      "user-request",
+      "employee",
+      "employee-home",
+      "employee-profile",
+      "employee-requests",
+      "employee-request",
+    ],
+  },
+  PERSONAL: {
+    allowedRoutes: [
+      "personal",
+      "personal-home",
+      "personal-profile",
+      "personal-employees",
+      "personal-employee",
+      "personal-requests",
+      "personal-employee-request",
     ],
   },
 };
@@ -158,8 +204,10 @@ router.beforeEach((to, from, next) => {
     if (to.name === "login") {
       if (role === "ADMIN") {
         next({ name: "admin-home" });
-      } else if (role === "USER") {
-        next({ name: "user-home" });
+      } else if (role === "EMPLOYEE") {
+        next({ name: "employee-home" });
+      } else if (role === "PERSONAL") {
+        next({ name: "personal-home" });
       } else {
         next();
       }
@@ -170,8 +218,10 @@ router.beforeEach((to, from, next) => {
       } else {
         if (role === "ADMIN") {
           next({ name: "admin-home" });
-        } else if (role === "USER") {
-          next({ name: "user-home" });
+        } else if (role === "EMPLOYEE") {
+          next({ name: "employee-home" });
+        } else if (role === "PERSONAL") {
+          next({ name: "personal-home" });
         }
       }
     }

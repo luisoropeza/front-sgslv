@@ -37,7 +37,7 @@
           :prepend-icon="item.icon"
           :title="item.title"
           :value="item.value"
-          :to="`/admin/${item.value}`"
+          :to="`/employee/${item.value}`"
         ></v-list-item>
       </template>
     </v-list>
@@ -73,8 +73,7 @@ const logout = () => {
 };
 const items = [
   { icon: "mdi-home", title: "Home", value: "home" },
-  { icon: "mdi-account-supervisor", title: "Users", value: "users" },
-  { icon: "mdi-account-group", title: "Teams", value: "teams" },
+  { icon: "mdi-pencil", title: "Request", value: "requests" },
   { icon: "mdi-account", title: "Profile", value: "profile" },
 ];
 </script>

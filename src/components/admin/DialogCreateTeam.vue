@@ -6,15 +6,16 @@
     variant="outlined"
     size="small"
   ></v-btn>
-  <v-dialog
-    v-model="dialog"
-    transition="dialog-bottom-transition"
-    persistent
-    scrollable
-    width="750"
-    min-width="300"
-  >
+  <v-dialog v-model="dialog" persistent scrollable width="750" min-width="300">
     <v-card class="pa-5">
+      <v-alert
+        v-if="errors.message"
+        border="start"
+        variant="tonal"
+        type="error"
+      >
+        {{ errors.message }}
+      </v-alert>
       <v-form @submit.prevent>
         <v-card-item>
           <div class="text-h5 font-weight-bold">Create</div>
@@ -28,6 +29,7 @@
                   label="Name*"
                   variant="outlined"
                   density="compact"
+                  :error-messages="errors.name"
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
@@ -74,25 +76,26 @@ import { ref } from "vue";
 
 const teamStore = useTeamStore();
 const emit = defineEmits(["fetchData"]);
-const message = ref("");
+const errors = ref({});
 const dialog = ref(false);
 const form = ref({
   name: null,
   description: null,
 });
+
 const createTeam = async () => {
   try {
     await teamStore.createTeam(form.value);
     emit("fetchData");
     resetForm();
   } catch (error) {
-    message.value = error.response.data.message;
+    errors.value = error.response.data;
   }
 };
 const resetForm = () => {
   form.value = {};
   dialog.value = false;
-  message.value = "";
+  errors.value = {};
 };
 </script>
 

@@ -1,13 +1,13 @@
 <template>
   <div class="d-flex">
-    <NavbarUser :user="user" />
-    <UserView @fetchData="fetchData" :profile="user" />
+    <NavbarPersonal :user="user" />
+    <PersonalView @fetchData="fetchData" :profile="user" />
   </div>
 </template>
 
 <script setup>
-import UserView from "@/layouts/user/View.vue";
-import NavbarUser from "@/components/user/Navbar.vue";
+import PersonalView from "@/layouts/personal/View.vue";
+import NavbarPersonal from "@/components/personal/Navbar.vue";
 import { useUserStore } from "@/store/user";
 import { ref, onBeforeMount } from "vue";
 

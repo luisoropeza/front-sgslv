@@ -19,7 +19,7 @@
           {{ request.user.firstName }} {{ request.user.lastName }}
         </td>
         <td class="font-weight-medium">
-          {{ request.user.team ? request.user.team : "N/A" }}
+          {{ request.user.team ? request.user.team.name : "N/A" }}
         </td>
         <td class="font-weight-medium">{{ request.reason }}</td>
         <td class="font-weight-medium">
@@ -43,8 +43,8 @@
             color="blue-accent-3"
             size="x-small"
             :to="{
-              name: 'admin-user-request',
-              params: { userId: request.user.id, requestId: request.id },
+              name: 'personal-employee-request',
+              params: { employeeId: request.user.id, requestId: request.id },
             }"
           >
             <v-icon icon="mdi-eye" size="20" />
@@ -56,35 +56,9 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
-import { useUserStore } from "@/store/user";
-import { useRequestStore } from "@/store/request";
-import { ref, onMounted } from "vue";
 import { format } from "@formkit/tempo";
 
-const router = useRouter();
-const userStore = useUserStore();
-const requestStore = useRequestStore();
-const id = ref(router.currentRoute.value.params.id);
-const user = ref({});
-const requests = ref([]);
-
-onMounted(async () => {
-  fetchData();
-});
-const fetchData = async () => {
-  if (id.value === undefined) {
-    await requestStore.getAllRequests();
-    requests.value = requestStore.requests;
-  } else {
-    await userStore.getUserById(id.value);
-    user.value = userStore.user;
-    await requestStore.getAllRequests();
-    requests.value = requestStore.requests.filter(
-      (request) => request.user.id === user.value.id
-    );
-  }
-};
+const prop = defineProps(["requests"]);
 </script>
 
 <style scoped>

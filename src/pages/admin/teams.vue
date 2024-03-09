@@ -5,7 +5,7 @@
         <div class="text-h4 font-weight-bold">Teams</div>
       </v-card-item>
       <v-card-item class="wrap-btn-create">
-        <DialogCT @fetchData="fetchData" />
+        <Dialog @fetchData="fetchData" />
       </v-card-item>
       <v-card-item>
         <div
@@ -15,7 +15,7 @@
           There's no teams yet.
         </div>
         <div v-else class="d-flex">
-          <ExpansionPanelT :teams="teams" />
+          <ExpansionPanel :teams="teams" />
         </div>
       </v-card-item>
     </v-card>
@@ -23,8 +23,8 @@
 </template>
 
 <script setup>
-import ExpansionPanelT from "@/components/admin/ExpasionPanelT.vue";
-import DialogCT from "@/components/admin/DialogCT.vue";
+import ExpansionPanel from "@/components/admin/ExpasionPanelTeams.vue";
+import Dialog from "@/components/admin/DialogCreateTeam.vue";
 import { useTeamStore } from "@/store/team";
 import { ref, onMounted } from "vue";
 

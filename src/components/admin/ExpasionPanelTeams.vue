@@ -8,14 +8,15 @@
         </div>
       </v-expansion-panel-title>
       <v-expansion-panel-text>
-        <TableTeamU :team="team" />
+        <Table :team="team" />
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>
 </template>
 
 <script setup>
-import TableTeamU from "@/components/admin/TableTeamU.vue";
+import Table from "@/components/admin/TableUsersByTeam.vue";
+
 const prop = defineProps(["teams"]);
 </script>
 

@@ -2,7 +2,6 @@
   <v-table class="wrap-table-u">
     <thead>
       <tr>
-        <th></th>
         <th>User</th>
         <th>Full Name</th>
         <th>Role</th>
@@ -15,9 +14,6 @@
         <td colspan="5" class="no-users">There's no user in the team yet.</td>
       </tr>
       <tr v-else v-for="user in users" :key="user.id">
-        <td class="d-flex">
-          <v-img :src="user.profilePhoto" width="50"></v-img>
-        </td>
         <td>{{ user.username }}</td>
         <td>{{ user.firstName }} {{ user.lastName }}</td>
         <td>{{ user.role }}</td>

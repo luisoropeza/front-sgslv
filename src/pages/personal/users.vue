@@ -4,9 +4,6 @@
       <v-card-item>
         <div class="text-h4 font-weight-bold">Users</div>
       </v-card-item>
-      <v-card-item class="wrap-btn-create">
-        <Dialog @fetchData="fetchData" />
-      </v-card-item>
       <v-card-item>
         <Table :users="users" :height="650" />
       </v-card-item>
@@ -15,8 +12,7 @@
 </template>
 
 <script setup>
-import Dialog from "@/components/admin/DialogCreateUser.vue";
-import Table from "@/components/admin/TableUsers.vue";
+import Table from "@/components/personal/TableUsers.vue";
 import { useUserStore } from "@/store/user";
 import { ref, onMounted } from "vue";
 
@@ -29,9 +25,9 @@ onMounted(async () => {
 });
 const fetchData = async () => {
   await userStore.getUser();
-  await userStore.getAllUsers();
+  await userStore.getUsersByTeam(prop.profile.team.id);
   users.value = userStore.users
-    .filter((user) => user.id !== prop.profile.id)
+    .filter((user) => user.id !== prop.profile.id && user.role != "PERSONAL")
     .sort((a, b) => {
       if (a.username < b.username) return -1;
       if (a.username > b.username) return 1;

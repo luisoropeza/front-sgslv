@@ -2,7 +2,6 @@
   <v-table class="wrap-table-u">
     <thead>
       <tr>
-        <th></th>
         <th>User</th>
         <th>Full Name</th>
         <th>Role</th>
@@ -11,15 +10,12 @@
     </thead>
     <tbody>
       <tr v-if="!users.length">
-        <td colspan="5" class="no-users">There's no user in the team yet.</td>
+        <td colspan="4" class="no-users">There's no user in the team yet.</td>
       </tr>
       <tr v-else v-for="user in users" :key="user.id">
-        <td class="d-flex">
-          <v-img :src="user.profilePhoto" width="50"></v-img>
-        </td>
         <td>{{ user.username }}</td>
         <td>{{ user.firstName }} {{ user.lastName }}</td>
-        <td>{{ user.role.role }}</td>
+        <td>{{ user.role }}</td>
         <td class="text-center">
           <v-btn
             color="blue-accent-3"
@@ -46,10 +42,8 @@ onMounted(async () => {
   fetchData();
 });
 const fetchData = async () => {
-  await userStore.getAllUsers();
-  users.value = userStore.users.filter(
-    (user) => user.team && user.team.id === prop.team.id
-  );
+  await userStore.getUsersByTeam(prop.team.id);
+  users.value = userStore.users;
 };
 </script>
 

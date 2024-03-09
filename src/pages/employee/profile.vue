@@ -4,7 +4,7 @@
       <v-card-item class="mx-5 my-2">
         <v-row>
           <v-col cols="auto">
-            <v-card-item>
+            <v-card-item v-if="profile.profilePhoto">
               <v-img
                 :src="profile.profilePhoto"
                 width="150"
@@ -22,7 +22,7 @@
           </v-col>
         </v-row>
         <v-card-item class="wrap-btn-update">
-          <DialogUP @fetchData="emit('fetchData')" />
+          <Dialog @fetchData="emit('fetchData')" :user="profile" />
         </v-card-item>
         <v-divider class="my-2"></v-divider>
         <v-card-item class="text-h5 font-weight-medium mb-5">
@@ -32,7 +32,7 @@
           <v-col cols="12" sm="6">
             <v-card-item>
               <strong>Role: </strong>
-              {{ profile.role ? profile.role : "N/A" }}
+              {{ profile.role }}
             </v-card-item>
           </v-col>
           <v-col cols="12" sm="6">
@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import DialogUP from "@/components/both/DialogUP.vue";
+import Dialog from "@/components/employee/DialogUpdateProfile.vue";
 import { format } from "@formkit/tempo";
 
 const prop = defineProps(["profile"]);

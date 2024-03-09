@@ -8,6 +8,7 @@ export const useUserStore = defineStore("user", {
   }),
   actions: {
     async createUser(form) {
+      console.log(form.team);
       const response = await axios.post(
         "http://localhost:8080/api/v1/users",
         {
@@ -42,8 +43,6 @@ export const useUserStore = defineStore("user", {
           phone: form.phone,
           birthDay: form.birthDay,
           profilePhoto: form.profilePhoto,
-          role: form.role,
-          team: form.team,
         },
         {
           headers: {
@@ -96,11 +95,22 @@ export const useUserStore = defineStore("user", {
       this.user = response.data;
     },
     async getAllUsers() {
-      const response = await axios.get("http://localhost:8080/api/v1/users", {
+      const response = await axios.get(`http://localhost:8080/api/v1/users`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
       });
+      this.users = response.data;
+    },
+    async getUsersByTeam(id) {
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/team/${id}/users`,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
       this.users = response.data;
       this.users.reverse();
     },

@@ -5,7 +5,6 @@
     @click="dialog = true"
     variant="outlined"
     size="small"
-    :disabled="user.team && userv.team && user.team.id !== userv.team.id"
   ></v-btn>
   <v-dialog
     v-model="dialog"
@@ -16,6 +15,14 @@
     min-width="300"
   >
     <v-card class="pa-5">
+      <v-alert
+        v-if="errors.message"
+        border="start"
+        variant="tonal"
+        type="error"
+      >
+        {{ errors.message }}
+      </v-alert>
       <v-form @submit.prevent>
         <v-card-item>
           <div class="text-h5 font-weight-bold">Update</div>
@@ -23,33 +30,7 @@
         <v-card-item>
           <v-card-text>
             <v-row>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="form.firstName"
-                  label="First Name*"
-                  variant="outlined"
-                  density="compact"
-                  disabled
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="form.lastName"
-                  label="Last Name*"
-                  variant="outlined"
-                  density="compact"
-                  disabled
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="form.username"
-                  label="Username*"
-                  variant="outlined"
-                  density="compact"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="12">
                 <v-text-field
                   v-model="form.password"
                   label="Password*"
@@ -58,70 +39,31 @@
                   :append-inner-icon="visible ? 'mdi-eye' : 'mdi-eye-off'"
                   @click:append-inner="visible = !visible"
                   density="compact"
+                  :error-messages="errors.password"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="form.email"
-                  label="Email"
-                  type="email"
+                <v-select
+                  v-model="form.role"
+                  :items="roles"
+                  label="Roles*"
+                  item-title="name"
+                  item-value="id"
                   variant="outlined"
                   density="compact"
-                  disabled
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="form.phone"
-                  label="Phone"
-                  variant="outlined"
-                  density="compact"
-                  disabled
-                ></v-text-field>
+                  :error-messages="errors.role"
+                ></v-select>
               </v-col>
               <v-col cols="12" sm="6">
                 <v-select
                   v-model="form.team"
                   :items="teams"
+                  label="Teams"
                   item-title="name"
                   item-value="id"
                   variant="outlined"
                   density="compact"
                 ></v-select>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  v-model="form.birthDay"
-                  type="date"
-                  variant="outlined"
-                  label="Birth Day"
-                  density="compact"
-                  disabled
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-select
-                  v-model="form.profilePhoto"
-                  :items="imageUrls"
-                  item-title="name"
-                  item-value="url"
-                  label="Select Photo"
-                  variant="outlined"
-                  density="compact"
-                  disabled
-                ></v-select>
-              </v-col>
-              <v-col cols="12" class="text-center">
-                <img
-                  :src="
-                    form.profilePhoto ? form.profilePhoto : userv.profilePhoto
-                  "
-                  :alt="
-                    form.profilePhoto ? form.profilePhoto : userv.profilePhoto
-                  "
-                  width="150"
-                  class="wrap-profile-img rounded-circle my-5"
-                />
               </v-col>
             </v-row>
           </v-card-text>
@@ -162,30 +104,22 @@ const router = useRouter();
 const userStore = useUserStore();
 const teamStore = useTeamStore();
 const emit = defineEmits(["fetchData"]);
+const prop = defineProps(["user"]);
 const id = ref(router.currentRoute.value.params.id);
-const user = ref({});
-const userv = ref({});
 const teams = ref([]);
-const message = ref("");
+const roles = ref(["PERSONAL", "EMPLOYEE"]);
+const errors = ref("");
 const dialog = ref(false);
 const visible = ref(false);
-const defaultTeam = ref({
-  id: null,
-  name: "No Team",
-});
 const form = ref({});
 
 onMounted(async () => {
   fetchData();
 });
 const fetchData = async () => {
-  await userStore.getUser();
-  user.value = userStore.user;
   await userStore.getUserById(id.value);
-  userv.value = userStore.user;
   await teamStore.getAllTeams();
   teams.value = teamStore.teams;
-  teams.value.unshift(defaultTeam.value);
   initForm();
 };
 const updateUser = async () => {
@@ -194,26 +128,18 @@ const updateUser = async () => {
     emit("fetchData");
     fetchData();
   } catch (error) {
-    message.value = error.response.data.message;
+    errors.value = error.response.data;
   }
 };
 const initForm = () => {
   form.value = {
-    id: userv.value.id,
-    username: userv.value.username,
-    password: "",
-    firstName: userv.value.firstName,
-    lastName: userv.value.lastName,
-    email: userv.value.email,
-    phone: userv.value.phone,
-    birthDay: userv.value.birthDay,
-    team: userv.value.team ? user.value.team.id : null,
-    role: userv.value.role,
-    profilePhoto: null,
+    password: null,
+    team: prop.user.team ? prop.user.team.id : null,
+    role: prop.user.role,
   };
   dialog.value = false;
   visible.value = false;
-  message.value = "";
+  errors.value = "";
 };
 
 const imageUrls = [

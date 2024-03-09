@@ -15,8 +15,13 @@
     min-width="300"
   >
     <v-card class="pa-5">
-      <v-alert v-if="message != ''" border="start" variant="tonal" type="error">
-        {{ message }}
+      <v-alert
+        v-if="errors.message"
+        border="start"
+        variant="tonal"
+        type="error"
+      >
+        {{ errors.message }}
       </v-alert>
       <v-form @submit.prevent>
         <v-card-item>
@@ -32,6 +37,7 @@
                   label="Init Date"
                   variant="outlined"
                   density="compact"
+                  :error-messages="errors.initDate"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -41,6 +47,7 @@
                   label="End Date"
                   variant="outlined"
                   density="compact"
+                  :error-messages="errors.endDate"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -52,6 +59,7 @@
                   item-value="id"
                   variant="outlined"
                   density="compact"
+                  :error-messages="errors.reason"
                 ></v-select>
               </v-col>
               <v-col cols="12" sm="6">
@@ -84,6 +92,7 @@
             Close
           </v-btn>
           <v-btn
+            :loading="loading"
             color="blue-accent-3"
             type="submit"
             @click="createRequest"
@@ -106,9 +115,10 @@ import { ref } from "vue";
 const requestStore = useRequestStore();
 const emit = defineEmits(["fetchData"]);
 const reasons = ref(["Medical license", "Vacation", "Other"]);
-const message = ref([""]);
+const errors = ref([]);
 const dialog = ref(false);
 const visible = ref(false);
+const loading = ref(false);
 const form = ref({
   initDate: null,
   endDate: null,
@@ -119,17 +129,21 @@ const form = ref({
 
 const createRequest = async () => {
   try {
+    loading.value = true;
     await requestStore.createRequest(form.value);
     emit("fetchData");
+    loading.value = false;
     resetForm();
   } catch (error) {
+    loading.value = false;
+    errors.value = error.response.data;
   }
 };
 const resetForm = () => {
   form.value = {};
   visible.value = false;
   dialog.value = false;
-  message.value = "";
+  errors.value = {};
 };
 </script>
 

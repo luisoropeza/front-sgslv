@@ -8,15 +8,19 @@
   ></v-btn>
   <v-dialog
     v-model="dialog"
-    transition="dialog-bottom-transition"
     persistent
     scrollable
     width="750"
     min-width="300"
   >
     <v-card class="pa-5">
-      <v-alert v-if="message != ''" border="start" variant="tonal" type="error">
-        {{ message }}
+      <v-alert
+        v-if="errors.message"
+        border="start"
+        variant="tonal"
+        type="error"
+      >
+        {{ errors.message }}
       </v-alert>
       <v-form @submit.prevent>
         <v-card-item>
@@ -31,6 +35,7 @@
                   label="First Name*"
                   variant="outlined"
                   density="compact"
+                  :error-messages="errors.firstName"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -39,6 +44,7 @@
                   label="Last Name*"
                   variant="outlined"
                   density="compact"
+                  :error-messages="errors.lastName"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -47,6 +53,7 @@
                   label="Username*"
                   variant="outlined"
                   density="compact"
+                  :error-messages="errors.username"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -58,6 +65,7 @@
                   :append-inner-icon="visible ? 'mdi-eye' : 'mdi-eye-off'"
                   @click:append-inner="visible = !visible"
                   density="compact"
+                  :error-messages="errors.password"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -67,6 +75,7 @@
                   type="email"
                   variant="outlined"
                   density="compact"
+                  :error-messages="errors.email"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -75,19 +84,8 @@
                   label="Phone"
                   variant="outlined"
                   density="compact"
+                  :error-messages="errors.phone"
                 ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-select
-                  v-model="form.team"
-                  :items="teams"
-                  item-title="name"
-                  item-value="id"
-                  label="Select a team"
-                  variant="outlined"
-                  density="compact"
-                  :disabled="user.role === 'USER'"
-                ></v-select>
               </v-col>
               <v-col cols="12" sm="6">
                 <v-text-field
@@ -98,7 +96,7 @@
                   density="compact"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12">
+              <v-col cols="12" sm="6">
                 <v-select
                   v-model="form.profilePhoto"
                   :items="imageUrls"
@@ -153,21 +151,14 @@
 
 <script setup>
 import { useUserStore } from "@/store/user";
-import { useTeamStore } from "@/store/team";
-import { ref, onMounted } from "vue";
+import { onMounted, ref } from "vue";
 
 const userStore = useUserStore();
-const teamStore = useTeamStore();
 const emit = defineEmits(["fetchData"]);
-const user = ref({});
-const teams = ref([]);
-const message = ref([""]);
+const prop = defineProps(["user"]);
+const errors = ref({});
 const dialog = ref(false);
 const visible = ref(false);
-const defaultTeam = ref({
-  id: null,
-  name: "No Team",
-});
 const form = ref({});
 
 onMounted(async () => {
@@ -175,10 +166,6 @@ onMounted(async () => {
 });
 const fetchData = async () => {
   await userStore.getUser();
-  user.value = userStore.user;
-  await teamStore.getAllTeams();
-  teams.value = teamStore.teams;
-  teams.value.unshift(defaultTeam.value);
   initForm();
 };
 const updateUser = async () => {
@@ -187,26 +174,23 @@ const updateUser = async () => {
     emit("fetchData");
     fetchData();
   } catch (error) {
-    message.value = error.response.data.message;
+    errors.value = error.response.data;
   }
 };
 const initForm = () => {
   form.value = {
-    id: user.value.id,
-    username: user.value.username,
-    password: "",
-    firstName: user.value.firstName,
-    lastName: user.value.lastName,
-    email: user.value.email,
-    phone: user.value.phone,
-    birthDay: user.value.birthDay,
-    team: user.value.team ? user.value.team.id : null,
-    role: user.value.role,
-    profilePhoto: null,
+    username: prop.user.username,
+    password: null,
+    firstName: prop.user.firstName,
+    lastName: prop.user.lastName,
+    email: prop.user.email,
+    phone: prop.user.phone,
+    birthDay: prop.user.birthDay,
+    profilePhoto: prop.user.profilePhoto,
   };
   dialog.value = false;
   visible.value = false;
-  message.value = "";
+  errors.value = {};
 };
 
 const imageUrls = [
